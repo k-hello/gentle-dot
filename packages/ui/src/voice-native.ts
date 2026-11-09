@@ -48,6 +48,7 @@ export interface NativeVoiceHandlers {
 	partial: (text: string) => void;
 	level: (level: number) => void;
 	error: (message: string) => void;
+	wake?: (keyword: string, score: number) => void;
 }
 
 /** Listens to the recognizer's events; resolves with a function that stops listening. */
@@ -65,6 +66,13 @@ export async function onNativeVoice(handlers: NativeVoiceHandlers): Promise<() =
 		listen<{ message?: unknown }>("voice://error", (event) => {
 			const message = event.payload?.message;
 			handlers.error(typeof message === "string" && message ? message : "Listening stopped.");
+		}),
+		listen<{ keyword?: unknown; score?: unknown }>("voice://wake", (event) => {
+			const keyword = event.payload?.keyword;
+			const score = event.payload?.score;
+			if (typeof keyword === "string" && handlers.wake) {
+				handlers.wake(keyword, typeof score === "number" ? score : 1);
+			}
 		}),
 	]);
 	return () => {

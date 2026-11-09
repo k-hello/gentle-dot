@@ -34,6 +34,7 @@ pub mod model;
 pub mod parakeet;
 #[cfg(unix)]
 pub mod pipe;
+pub mod wake;
 #[cfg_attr(not(windows), allow(dead_code))]
 pub mod wasapi;
 
